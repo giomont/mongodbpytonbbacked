@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
 from urllib.parse import quote_plus
+from fastapi.staticfiles import StaticFiles
 import os
 
 app = FastAPI()
@@ -23,6 +24,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Montar el directorio 'static' para servir archivos estáticos
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/productos")
 def get_productos(categoria: str = None):

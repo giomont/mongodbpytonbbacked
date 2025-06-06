@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from urllib.parse import quote_plus
 
 user = "giomont"
-password = "Semeolvido@7125"
+password = "Semeolvido@712510"  # Actualizo la contraseña a la nueva clave proporcionada
 user_escaped = quote_plus(user)
 password_escaped = quote_plus(password)
 
