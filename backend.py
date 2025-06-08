@@ -26,7 +26,7 @@ app.add_middleware(
 )
 
 # Montar el directorio 'static' para servir archivos estáticos
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="/home/gio/menumariadb/menumariadb/static"), name="static")
 
 @app.get("/productos")
 def get_productos(categoria: str = None):
