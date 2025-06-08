@@ -29,7 +29,7 @@ app.add_middleware(
 )
 
 # Montar el directorio principal para servir archivos estáticos
-app.mount("/", StaticFiles(directory="/home/gio/menu_mongodb_pyback"), name="root")
+app.mount("/static", StaticFiles(directory="/home/gio/menu_mongodb_pyback"), name="static")
 
 @app.get("/productos")
 def get_productos(categoria: str = None):
@@ -38,6 +38,7 @@ def get_productos(categoria: str = None):
         if categoria:
             filtro["categoria"] = categoria
         productos = list(db.productos.find(filtro, {"_id": 0}))
+        print(f"Productos fetched from MongoDB: {productos}")  # Debug print
         return productos
     except Exception as e:
         print(f"Error al obtener productos: {e}")
