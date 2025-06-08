@@ -4,6 +4,9 @@ from pymongo import MongoClient
 from urllib.parse import quote_plus
 from fastapi.staticfiles import StaticFiles
 import os
+import uvicorn
+
+print("Starting backend.py script...")
 
 app = FastAPI()
 
@@ -25,8 +28,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Montar el directorio 'static' para servir archivos estáticos
-app.mount("/static", StaticFiles(directory="/home/gio/menumariadb/menumariadb/static"), name="static")
+# Montar el directorio principal para servir archivos estáticos
+app.mount("/", StaticFiles(directory="/home/gio/menu_mongodb_pyback"), name="root")
 
 @app.get("/productos")
 def get_productos(categoria: str = None):
@@ -44,3 +47,18 @@ def get_productos(categoria: str = None):
 def get_categorias():
     categorias = db.productos.distinct("categoria")
     return categorias
+
+@app.get("/check_db")
+def check_db_connection():
+    try:
+        # The ismaster command is cheap and does not require auth.
+        client.admin.command('ismaster')
+        return {"status": "success", "message": "MongoDB connection successful!"}
+    except Exception as e:
+        return {"status": "error", "message": f"MongoDB connection failed: {e}"}
+
+print("backend.py script finished setup.")
+
+if __name__ == "__main__":
+    print("Running uvicorn server...")
+    uvicorn.run(app, host="0.0.0.0", port=8000)

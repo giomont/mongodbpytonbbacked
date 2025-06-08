@@ -1,51 +1,26 @@
 // Este script obtiene los productos del backend y los muestra en la página
 
-function cargarCategorias() {
-  fetch('http://localhost:8080/categorias')
-    .then(response => response.json())
-    .then(categorias => {
-      const contenedor = document.getElementById('categorias-botones');
-      contenedor.innerHTML = '';
-      categorias.forEach(cat => {
-        const btn = document.createElement('button');
-        btn.className = 'btn-categoria';
-        btn.textContent = cat;
-        btn.onclick = () => {
-          // Alternar selección visual
-          document.querySelectorAll('.btn-categoria').forEach(b => b.classList.remove('activo'));
-          btn.classList.add('activo');
-          cargarProductos(cat);
-        };
-        contenedor.appendChild(btn);
-      });
-      // Botón para mostrar todos
-      const btnTodos = document.createElement('button');
-      btnTodos.className = 'btn-categoria';
-      btnTodos.textContent = 'Todas';
-      btnTodos.onclick = () => {
-        document.querySelectorAll('.btn-categoria').forEach(b => b.classList.remove('activo'));
-        btnTodos.classList.add('activo');
-        cargarProductos();
-      };
-      contenedor.insertBefore(btnTodos, contenedor.firstChild);
-      btnTodos.classList.add('activo');
-    })
-    .catch(error => {
-      console.error('Error al cargar categorías:', error);
-    });
-}
-
-function cargarProductos(categoria = "") {
-  let url = 'http://localhost:8080/productos';
-  if (categoria) {
-    url += `?categoria=${encodeURIComponent(categoria)}`;
-  }
+function cargarProductos() {
+  let url = 'http://localhost:8000/productos';
+  console.log(`Fetching products from: ${url}`); // Log the URL being fetched
   fetch(url)
-    .then(response => response.json())
+    .then(response => {
+      console.log('Received response:', response); // Log the response object
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
     .then(productos => {
+      console.log('Received products data:', productos); // Log the received data
       const contenedor = document.getElementById('productos');
+      if (!contenedor) {
+          console.error('Products container element not found!'); // Log if container is missing
+          return;
+      }
       if (productos.length === 0) {
         contenedor.innerHTML = '<p>No hay productos disponibles.</p>';
+        console.log('No products available.'); // Log if no products are found
         return;
       }
       contenedor.innerHTML = "";
@@ -59,20 +34,16 @@ function cargarProductos(categoria = "") {
         `;
         contenedor.appendChild(div);
       });
+      console.log(`Displayed ${productos.length} products.`); // Log the number of products displayed
     })
     .catch(error => {
       document.getElementById('productos').innerHTML = '<p>Error al cargar los productos.</p>';
-      console.error('Error al cargar productos:', error);
+      console.error('Error al cargar productos:', error); // Log any errors during fetch or processing
     });
 }
 
-// Cargar categorías y productos al cargar la página
+// Cargar productos al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
-  // Crear contenedor de botones de categorías si no existe (ya lo añadimos en HTML)
-  // const categoriasDiv = document.createElement('div');
-  // categoriasDiv.id = 'categorias-botones';
-  // categoriasDiv.className = 'categorias-botones';
-  // document.querySelector('.filtro-categorias').appendChild(categoriasDiv);
-  cargarCategorias();
-  cargarProductos();
+  console.log('DOM fully loaded and parsed'); // Log when DOM is ready
+  cargarProductos(); // Load all products by default
 });
